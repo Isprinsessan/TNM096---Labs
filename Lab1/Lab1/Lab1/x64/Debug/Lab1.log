@@ -1,0 +1,5 @@
+﻿  Lab1.cpp
+  Node.cpp
+  Generating Code...
+c:\users\erik\documents\skola\tnm096 artificiell intelligens principer och tekniker\tnm096---labs\lab1\lab1\lab1\node.cpp(200): warning C4715: 'EightPuzzle::findEmpty': not all control paths return a value
+  Lab1.vcxproj -> C:\Users\Erik\Documents\Skola\TNM096 Artificiell intelligens principer och tekniker\TNM096---Labs\Lab1\Lab1\x64\Debug\Lab1.exe

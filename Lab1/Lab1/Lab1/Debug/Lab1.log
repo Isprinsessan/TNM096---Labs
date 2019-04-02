@@ -1,3 +1,28 @@
-﻿  stdafx.cpp
-  Lab1.cpp
-c:\users\erik\documents\skola\tnm096 artificiell intelligens principer och tekniker\lab1\lab1\lab1\lab1.cpp(15): error C3861: 'FillMatrix': identifier not found
+﻿  Lab1.cpp
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\xutility(3485): error C2678: binary '==': no operator found which takes a left-hand operand of type 'Node' (or there is no acceptable conversion)
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\system_error(370): note: could be 'bool std::operator ==(const std::error_condition &,const std::error_condition &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\system_error(364): note: or       'bool std::operator ==(const std::error_condition &,const std::error_code &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\system_error(358): note: or       'bool std::operator ==(const std::error_code &,const std::error_condition &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\system_error(352): note: or       'bool std::operator ==(const std::error_code &,const std::error_code &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\exception(329): note: or       'bool std::operator ==(const std::exception_ptr &,std::nullptr_t) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\exception(324): note: or       'bool std::operator ==(std::nullptr_t,const std::exception_ptr &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\exception(319): note: or       'bool std::operator ==(const std::exception_ptr &,const std::exception_ptr &) noexcept'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\xutility(3485): note: while trying to match the argument list '(Node, const Node)'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\xutility(3498): note: see reference to function template instantiation '_InIt std::_Find_unchecked1<_InIt,_Ty>(_InIt,const _InIt,const _Ty &,std::false_type)' being compiled
+          with
+          [
+              _InIt=Node *,
+              _Ty=Node
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\xutility(3507): note: see reference to function template instantiation '_InIt std::_Find_unchecked<Node*,_Ty>(const _InIt,const _InIt,const _Ty &)' being compiled
+          with
+          [
+              _InIt=Node *,
+              _Ty=Node
+          ]
+  c:\users\erik\documents\skola\tnm096 artificiell intelligens principer och tekniker\tnm096---labs\lab1\lab1\lab1\lab1.cpp(199): note: see reference to function template instantiation '_InIt std::find<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,Node>(_InIt,const _InIt,const _Ty &)' being compiled
+          with
+          [
+              _InIt=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<Node>>>,
+              _Ty=Node
+          ]

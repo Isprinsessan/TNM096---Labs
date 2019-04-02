@@ -1,265 +1,243 @@
 #include "stdafx.h"
-#include <iostream>
-#include <algorithm>
-using namespace std;
 #include "Puzzle.h"
-#include <stdlib.h>
+#include <string>
 
-struct less_than_key
+
+Puzzle::Puzzle()
 {
-	inline bool operator() (const PuzzleNode& struct1, const PuzzleNode& struct2)
+	Node startPuzzle;
+
+	//Starting puzzles
+	//Hard one, 27 steps
+	startPuzzle.puzzleState[0] = 1; startPuzzle.puzzleState[1] = 0; startPuzzle.puzzleState[2] = 5;
+	startPuzzle.puzzleState[3] = 6; startPuzzle.puzzleState[4] = 4; startPuzzle.puzzleState[5] = 7;
+	startPuzzle.puzzleState[6] = 2; startPuzzle.puzzleState[7] = 3; startPuzzle.puzzleState[8] = 8;
+	
+	//Less hard
+	//startPuzzle.puzzleState[0] = 4; startPuzzle.puzzleState[1] = 1; startPuzzle.puzzleState[2] = 2;
+	//startPuzzle.puzzleState[3] = 5; startPuzzle.puzzleState[4] = 8; startPuzzle.puzzleState[5] = 3;
+	//startPuzzle.puzzleState[6] = 0; startPuzzle.puzzleState[7] = 7; startPuzzle.puzzleState[8] = 6;
+
+	//Create goal puzzle
+	goalState.puzzleState[0] = 1; goalState.puzzleState[1] = 2; goalState.puzzleState[2] = 3;
+	goalState.puzzleState[3] = 4; goalState.puzzleState[4] = 5; goalState.puzzleState[5] = 6;
+	goalState.puzzleState[6] = 7; goalState.puzzleState[7] = 8; goalState.puzzleState[8] = 0;
+
+	startPuzzle.g = 0;
+
+	//startPuzzle.h = GetHCost(startPuzzle);
+	startPuzzle.h = ManhattanSum(startPuzzle);
+	startPuzzle.f = startPuzzle.h + startPuzzle.g;
+
+	//Push the starting node to the open set
+	openSet.push(startPuzzle);
+
+}
+
+void Puzzle::MoveEmpty() 
+{
+	int nrOfMoves = 0;
+	std::string currentBoardLabel = "";
+
+	while (true)
 	{
-		return (struct1.cost > struct2.cost);
-	}
-};
+		//Create the label for the node
+		currentBoardLabel = createKey(openSet.top());
 
+		//Insert the node into the map with the corresponding label
+		closedSet.insert({ currentBoardLabel, openSet.top() });
 
-int Puzzle::CostCalc(PuzzleNode n) {
+		//Collect the latest used node from the closed set
+		latestNode = &closedSet.at(currentBoardLabel);
 
-	//int cost = MisplacedTiles(n);
-	int cost = ManhattanCalc(n);
-	// cout << endl << "Man: " << cost << endl << " mis: " << MisplacedTiles(n);
-	return cost;
-}
+		//Remove it from the open set
+		openSet.pop();
 
-Puzzle::Puzzle() {
-	//row 1
-	data.puzzleState[0] = 1;
-	data.puzzleState[1] = 0;
-	data.puzzleState[2] = 5;
-	//row 2
-	data.puzzleState[3] = 6;
-	data.puzzleState[4] = 4;
-	data.puzzleState[5] = 7;
-	//row 3
-	data.puzzleState[6] = 2;
-	data.puzzleState[7] = 3;
-	data.puzzleState[8] = 8;
-	//stegen man gått
-	data.g = 0;
-	//hur många rutor som är fel
-	data.h = CostCalc(data);
-	//f, h +g
-	data.cost = data.h + data.g;
+		//Find the empty tile and use it to see possible ways to move
+		int empty = FindEmpty(*latestNode);
 
-	//openNodes.push_back(data);
-
-
-
-	openNodes.push(data);
-	bestPath.cost = -1;
-}
-
-void Puzzle::SolvePuzzle() {
-	int counter = 0;
-	PuzzleNode temp;
-	while (true) {//openNodes.size() > 0) {
-
-				  // std::sort(openNodes.begin(), openNodes.end(), less_than_key());
-		temp = openNodes.top();
-		openNodes.pop();
-		closedNodes.push_back(temp);
-		//cout <<"size: " << openNodes.size()<< endl;
-		//print(temp);
-
-
-
-
-
-
-		if (MisplacedTiles(temp) == 0) {
-			if (bestPath.cost == -1 || temp.cost < bestPath.cost) {
-				bestPath = temp;
-				cout << "counter: " << counter;
-				cout << endl << "-----DONE-----" << endl;
-				print(bestPath);
-				break;
-			}
+		switch (empty){
+		case 0:
+			//If the empty node is in the top left
+			MoveTile(empty, 1);	//Right
+			MoveTile(empty, 3);	//Down
+			break;
+		case 1:
+			//If the empty node is in the top middle
+			MoveTile(empty, 0);	//Left
+			MoveTile(empty, 2);	//Right
+			MoveTile(empty, 4); //Down
+			break;
+		case 2:
+			//If the empty node is in the top right
+			MoveTile(empty, 1);	//Left
+			MoveTile(empty, 5);	//Down
+			break;
+		case 3:
+			//If the empty node is in the middle left
+			MoveTile(empty, 0);	//Up
+			MoveTile(empty, 4);	//Right
+			MoveTile(empty, 6);	//Down
+			break;
+		case 4:
+			//If the empty node is in the middle middle
+			MoveTile(empty, 1);	//Up
+			MoveTile(empty, 3);	//Left
+			MoveTile(empty, 5);	//Right
+			MoveTile(empty, 7);	//Down
+			break;
+		case 5:
+			//If the empty node is in the top right
+			MoveTile(empty, 2);	//Up
+			MoveTile(empty, 4);	//Right
+			MoveTile(empty, 8);	//Down
+			break;
+		case 6:
+			//If the empty node is in the bottom left
+			MoveTile(empty, 3);	//Up
+			MoveTile(empty, 7);	//Right
+			break;
+		case 7:
+			//If the empty node is in the bottom middle
+			MoveTile(empty, 4);	//Up
+			MoveTile(empty, 6);	//Left
+			MoveTile(empty, 8);	//Right
+			break;
+		case 8:
+			//If the empty node is in the bottom right
+			MoveTile(empty, 5);	//Up
+			MoveTile(empty, 7);	//Left
+			break;
 		}
-		else {
-			MovePuzzle(temp);
-		}
-		counter++;
 
+		nrOfMoves++;
+
+		//If the puzzle is solved or if the open set is empty, break the loop
+		if (ComparePuzzles(openSet.top(), goalState) || openSet.empty())
+			break;
 	}
+
+	std::cout << std::endl << "This took " << nrOfMoves << " moves." << std::endl;
 }
 
+void Puzzle::MoveTile(int _start, int _end)
+{
+	//Create a new puzzle node that inherits all properites of the latest puzzle
+	Node newPuzzle;
 
+	for (int i = 0; i < 9; i++)
+		newPuzzle.puzzleState[i] = latestNode->puzzleState[i];
 
-int Puzzle::GetEmptyPos(PuzzleNode n) {
-	int temp = 0;
-	for (int i = 0; i<9; i++) {
-		if (n.puzzleState[i] == 0) {
-			temp = i;
-		}
-	}
-	return temp;
+	//Change the g, h and f for the new puzzle
+	newPuzzle.g = latestNode->g + 1;
+
+	//Get h cost with either number of wrong tiles or with Manhattan distance
+	//newPuzzle.h = GetHCost(newPuzzle);
+	newPuzzle.h = ManhattanSum(newPuzzle);
+
+	//Move the tile and create a new puzzle
+	newPuzzle.puzzleState[_start] = newPuzzle.puzzleState[_end];
+	newPuzzle.puzzleState[_end] = 0;
+
+	newPuzzle.f = newPuzzle.g + newPuzzle.h;
+
+	//If the new puzzle is not in the closed set, add it to the open set
+	if (!NodeInSet(newPuzzle))
+		openSet.push(newPuzzle);
 }
 
-void Puzzle::MovePuzzle(PuzzleNode n) {
-
-	switch (GetEmptyPos(n)) {
-	case 0:
-		//right
-		MakeEmptyMove(0, 1, n);
-		//down
-		MakeEmptyMove(0, 3, n);
-		break;
-	case 1:
-		//left
-		MakeEmptyMove(1, 0, n);
-		//right
-		MakeEmptyMove(1, 2, n);
-		//down
-		MakeEmptyMove(1, 4, n);
-
-		break;
-	case 2:
-		//left
-		MakeEmptyMove(2, 1, n);
-		//down
-		MakeEmptyMove(2, 5, n);
-		break;
-	case 3:
-		//up
-		MakeEmptyMove(3, 0, n);
-		//right
-		MakeEmptyMove(3, 4, n);
-		//down
-		MakeEmptyMove(3, 6, n);
-		break;
-	case 4:
-		//up
-		MakeEmptyMove(4, 1, n);
-		//left
-		MakeEmptyMove(4, 3, n);
-		//right
-		MakeEmptyMove(4, 5, n);
-		//down
-		MakeEmptyMove(4, 7, n);
-
-		break;
-	case 5:
-		//up
-		MakeEmptyMove(5, 2, n);
-		//left
-		MakeEmptyMove(5, 4, n);
-		//down
-		MakeEmptyMove(5, 8, n);
-		break;
-	case 6:
-		//up
-		MakeEmptyMove(6, 3, n);
-		//right
-		MakeEmptyMove(6, 7, n);
-		break;
-	case 7:
-		//up
-		MakeEmptyMove(7, 4, n);
-		//left
-		MakeEmptyMove(7, 6, n);
-		//right
-		MakeEmptyMove(7, 8, n);
-		break;
-	case 8:
-		//up
-		MakeEmptyMove(8, 5, n);
-		//left
-		MakeEmptyMove(8, 7, n);
-		break;
-	default:
-		break;
+int Puzzle::FindEmpty(Node _node)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		if (_node.puzzleState[i] == 0)
+			return i;
 	}
 
-
+	return 0;
 }
 
-void Puzzle::MakeEmptyMove(int start, int move, PuzzleNode n) {
-	PuzzleNode temp;
+int Puzzle::ManhattanSum(Node _node)
+{
+	int manhattanSum = 0;
 
-	for (int i = 0; i<9; i++) {
-		temp.puzzleState[i] = n.puzzleState[i];
-	}
-	int score_g = n.g;
-
-	temp.g = score_g + 1;
-	temp.h = CostCalc(temp);
-	temp.cost = temp.g + temp.h;
-
-
-	temp.puzzleState[start] = temp.puzzleState[move];
-	temp.puzzleState[move] = 0;
-
-
-	if (!checkIfClosed(temp)) {
-
-		openNodes.push(temp);
-
-
-	}
-
-
-
-}
-bool Puzzle::checkIfClosed(PuzzleNode n) {
-	PuzzleNode temp;
-	for (int i = 0; i < closedNodes.size(); i++) {
-		temp = closedNodes[i];
-		if (comparePuzzleNode(n, temp)) {
-			return true;
+	for (int i = 0; i < 9; i++)
+	{
+		for (int j = 0; j < 9; j++)
+		{
+			//Find the node with the same value to and use their position in the puzzle to calculate manhattan distance
+			if (_node.puzzleState[i] == goalState.puzzleState[j])
+				manhattanSum += ManhattanDistance(i, j);
 		}
 	}
 
-	return false;
+	return manhattanSum;
 }
-bool Puzzle::comparePuzzleNode(PuzzleNode n, PuzzleNode p) {
 
-	//bool equal = true;
+int Puzzle::ManhattanDistance(int _position1, int _position2)
+{
+	//Create two coordinates to compare distance between
+	int x1 = _position1 % 3;	//Column
+	int y1 = _position1 / 3;	//Row
 
-	for (int i = 0; i < 9; i++) {
-		if (n.puzzleState[i] != p.puzzleState[i]) {
+	int x2 = _position2 % 3;	//Column
+	int y2 = _position2 / 3;	//Row
 
+	//Return manhattan distance
+	return (abs(x1 - x2) + abs(y1 - y2));
+}
+
+int Puzzle::GetHCost(Node _node)
+{
+	int h = 0;
+	for (int i = 0; i < 9; i++)
+	{
+		if (_node.puzzleState[i] != goalState.puzzleState[i])
+			h++;
+	}
+	return h;
+}
+
+bool Puzzle::ComparePuzzles(Node _node1, Node _node2)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		if (_node1.puzzleState[i] != _node2.puzzleState[i])
 			return false;
-		}
 	}
-
 
 	return true;
 
 }
-int Puzzle::ManhattanCalc(PuzzleNode n) {
-	int sum = 0;
 
-	for (int i = 0; i<9; i++) {
-		if (n.puzzleState[i] != 0) {
-			sum += ManhattanDist((n.puzzleState[i] - 1), i);
-		}
-	}
-	return sum;
-
-}
-int Puzzle::ManhattanDist(int p1, int p2) {
-
-	int x_val = p1 % 3;
-	int y_val = p1 / 3;
-	int x_goal = p2 % 3;
-	int y_goal = p2 / 3;
-
-	return abs(x_val - x_goal) + abs(y_val - y_goal);
-}
-int Puzzle::MisplacedTiles(PuzzleNode n) {
-	int count = 0;
-	for (int i = 0; i <9; i++) {
-		if ((n.puzzleState[i] != (i + 1)) && (n.puzzleState[i] != 0)) {
-
-			count++;
-		}
-	}
-	return count;
+bool Puzzle::NodeInSet(Node _node)
+{
+	//Search for the key in the closed set, if it is not found, the node is not in the set
+	if (closedSet.find(createKey(_node)) == closedSet.end())
+		return false;
+	else
+		return true;
 }
 
-void Puzzle::print(PuzzleNode n) {
-	cout << "\n" << n.puzzleState[0] << " " << n.puzzleState[1] << " " << n.puzzleState[2] << "\n" << n.puzzleState[3] << " " << n.puzzleState[4] << " " << n.puzzleState[5] << "\n" <<
-		n.puzzleState[6] << " " << n.puzzleState[7] << " " << n.puzzleState[8] << "\n";
-	cout << "cost: " << n.cost << "\n" << "steg: " << n.g << endl;
+std::string Puzzle::createKey(Node _node)
+{
+	std::string temp = "";
+
+	//Create a key consisting of the numbers in the puzzle
+	for (int i = 0; i < 9; i++)
+		temp += _node.puzzleState[i];
+
+	return temp;
+}
+
+void Puzzle::print()
+{
+	std::cout << openSet.top().puzzleState[0] << "  " << openSet.top().puzzleState[1] << "  " << openSet.top().puzzleState[2] << std::endl;
+	std::cout << openSet.top().puzzleState[3] << "  " << openSet.top().puzzleState[4] << "  " << openSet.top().puzzleState[5] << std::endl;
+	std::cout << openSet.top().puzzleState[6] << "  " << openSet.top().puzzleState[7] << "  " << openSet.top().puzzleState[8] << std::endl;
+	std::cout << "f: " << openSet.top().f << std::endl;
+	std::cout << "g: " << openSet.top().g << std::endl;
+	std::cout << "h: " << openSet.top().h << std::endl;
+	std::cout << "Moves made: " << openSet.top().g << std::endl;
+ 
 }

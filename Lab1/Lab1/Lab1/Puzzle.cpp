@@ -9,9 +9,9 @@ Puzzle::Puzzle()
 
 	//Starting puzzles
 	//Hard one, 27 steps
-	startPuzzle.puzzleState[0] = 1; startPuzzle.puzzleState[1] = 0; startPuzzle.puzzleState[2] = 5;
-	startPuzzle.puzzleState[3] = 6; startPuzzle.puzzleState[4] = 4; startPuzzle.puzzleState[5] = 7;
-	startPuzzle.puzzleState[6] = 2; startPuzzle.puzzleState[7] = 3; startPuzzle.puzzleState[8] = 8;
+	startPuzzle.puzzleState[0] = 6; startPuzzle.puzzleState[1] = 4; startPuzzle.puzzleState[2] = 7;
+	startPuzzle.puzzleState[3] = 8; startPuzzle.puzzleState[4] = 5; startPuzzle.puzzleState[5] = 0;
+	startPuzzle.puzzleState[6] = 3; startPuzzle.puzzleState[7] = 2; startPuzzle.puzzleState[8] = 1;
 	
 	//Less hard
 	//startPuzzle.puzzleState[0] = 4; startPuzzle.puzzleState[1] = 1; startPuzzle.puzzleState[2] = 2;
@@ -25,8 +25,8 @@ Puzzle::Puzzle()
 
 	startPuzzle.g = 0;
 
-	//startPuzzle.h = GetHCost(startPuzzle);
-	startPuzzle.h = ManhattanSum(startPuzzle);
+	startPuzzle.h = GetHCost(startPuzzle);
+	//startPuzzle.h = ManhattanSum(startPuzzle);
 	startPuzzle.f = startPuzzle.h + startPuzzle.g;
 
 	//Push the starting node to the open set
@@ -110,6 +110,8 @@ void Puzzle::MoveEmpty()
 			break;
 		}
 
+		//print();
+
 		nrOfMoves++;
 
 		//If the puzzle is solved or if the open set is empty, break the loop
@@ -132,8 +134,8 @@ void Puzzle::MoveTile(int _start, int _end)
 	newPuzzle.g = latestNode->g + 1;
 
 	//Get h cost with either number of wrong tiles or with Manhattan distance
-	//newPuzzle.h = GetHCost(newPuzzle);
-	newPuzzle.h = ManhattanSum(newPuzzle);
+	newPuzzle.h = GetHCost(newPuzzle);
+	//newPuzzle.h = ManhattanSum(newPuzzle);
 
 	//Move the tile and create a new puzzle
 	newPuzzle.puzzleState[_start] = newPuzzle.puzzleState[_end];
